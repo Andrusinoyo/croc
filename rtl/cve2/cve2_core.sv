@@ -12,6 +12,7 @@
 /**
  * Top level module of the ibex RISC-V core
  */
+ 
 module cve2_core import cve2_pkg::*; #(
   parameter bit          PMPEnable         = 1'b0,
   parameter int unsigned PMPGranularity    = 0,

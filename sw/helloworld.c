@@ -36,8 +36,10 @@ int main() {
 
     // simple printf support (only prints text and hex numbers)
     printf("Hello World!\n");
+    printf("Hola soy la prueba para Pablo!!\n");
     // wait until uart has finished sending
     uart_write_flush();
+ 
 
     // toggling some GPIOs
     gpio_set_direction(0xFFFF, 0x000F); // lowest four as outputs
@@ -60,9 +62,14 @@ int main() {
     uart_write_flush();
 
     // using the timer
+    uint32_t counter_timer = 0;
+    while(counter_timer < 20) {
     printf("Tick\n");
     sleep_ms(10);
     printf("Tock\n");
+    sleep_ms(10);
+    counter_timer++;
     uart_write_flush();
+    }
     return 1;
 }
