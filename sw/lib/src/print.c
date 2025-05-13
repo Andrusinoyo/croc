@@ -4,9 +4,12 @@
 //
 // Philippe Sauter <phsauter@iis.ee.ethz.ch>
 
+#include <time.h>
+
 #include "print.h"
 #include "util.h"
 #include "config.h"
+
 
 const char hex_symbols[16] = {'0', '1', '2', '3', '4', '5', '6', '7', 
                               '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
@@ -50,4 +53,9 @@ void printf(const char *fmt, ...) {
     }
 
     va_end(args);
+}
+
+void print_tm(struct tm* t) {
+    printf("Fecha: %04d-%02d-%02d\n", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);
+    printf("Hora:  %02d:%02d:%02d\n", t->tm_hour, t->tm_min, t->tm_sec);
 }

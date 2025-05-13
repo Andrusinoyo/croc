@@ -10,6 +10,7 @@
 #include "timer.h"
 #include "gpio.h"
 #include "util.h"
+#include "rtc.h"
 
 /// @brief Example integer square root
 /// @return integer square root of n
@@ -34,9 +35,16 @@ uint32_t isqrt(uint32_t n) {
 int main() {
     uart_init(); // setup the uart peripheral
 
+    struct tm loco;
+    uint64_t milisec = 100;
+
+    //epoch_ms_to_tm(milisec, &loco);
+
     // simple printf support (only prints text and hex numbers)
     printf("Hello World!\n");
-    printf("Hola soy la prueba para Pablo!!\n");
+    printf("Hola soy el primer dia de curro sobre el tfm\n");
+    printf("Prueba tm\n");
+    //print_tm(&loco);
     // wait until uart has finished sending
     uart_write_flush();
  
