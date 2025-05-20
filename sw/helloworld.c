@@ -32,12 +32,20 @@ uint32_t isqrt(uint32_t n) {
     return res;
 }
 
+// Declara que esta funcion va a ser usada como manejador de interrupciones
+void timer_interrupt_handler(void) __attribute__((interrupt)); // Deberia funcionar
+
+// __attribute__((interrupt)): manejador de interrupciones
+void timer_interrupt_handler(void) {
+    printf("Soy el manejador de interrupciones y funciono, soy la polla");
+}
+
 int main() {
     uart_init(); // setup the uart peripheral
 
     // simple printf support (only prints text and hex numbers)
     printf("Hello World!\n");
-    printf("Hola soy el primer dia de curro sobre el tfm\n");
+    printf("Hola soy el primer dia de dsadsas sobre el tfm\n");
     printf("Prueba tm\n");
     //print_tm(&loco);
     // wait until uart has finished sending
@@ -63,6 +71,45 @@ int main() {
     uint32_t end   = get_mcycle();
     printf("Result: 0x%x, Cycles: 0x%x\n", res, end - start);
     uart_write_flush();
+
+    // PRUEBA DE INTERRUPCIONES. 
+    // CON INTERRUPCIONES DESHABILITADAS NUNCA SALIMOS DEL TIMER
+
+    printf("Prueba de interrupciones\n");
+    uart_write_flush();
+
+    printf("Habilitamos interrupciones\n");
+    uart_write_flush();
+    enable_interrupt();
+    printf("Entrando en sleep CON interrupciones\n");
+    sleep_ms_2(2);
+    printf("Saliendo de sleep CON interrupciones\n");
+    
+    disable_interrupt();
+
+    // printf("Deshabilitamos interrupciones\n");
+    // uart_write_flush();
+    // disable_interrupt();
+    // printf("Entrando en sleep SIN interrupciones\n");
+    // sleep_ms_2(2);
+    // printf("Saliendo de sleep SIN interrupciones???\n");
+
+    
+    // PRUEBA MANEJADOR DE INTERRUPCIONES
+
+    // Instalamos el manejador de instrucciones para el puerto 7 (mtie)
+    //install_exception_handler(7, &timer_interrupt_handler);
+    //interrupt_set_handler(7, &timer_interrupt_handler);
+    enable_interrupt();
+
+    
+
+    printf("Manejador de interrupciones instanciado e interrupciones habilitadas, pasando a sleep");
+    sleep_ms_2(2);
+    printf("Saliendo del sleep check del manejador de interrupciones");
+
+
+    
 
     // using the timer
     uint32_t counter_timer = 0;
