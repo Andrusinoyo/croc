@@ -8,10 +8,13 @@
 
 #include <stdarg.h>
 #include <time.h>
+#include <inttypes.h>
 
 extern void putchar(char);
 
 // simple printf with support for %x formatter but no others
 void printf(const char *fmt, ...);
 
-void print_tm(struct tm* t);
+//void print_tm(struct tm* t);
+
+void print_mtvec(void);

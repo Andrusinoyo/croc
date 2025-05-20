@@ -11,6 +11,7 @@
 #include "gpio.h"
 #include "util.h"
 #include "rtc.h"
+#include "interrupt_handler.h"
 
 /// @brief Example integer square root
 /// @return integer square root of n
@@ -45,7 +46,7 @@ int main() {
 
     // simple printf support (only prints text and hex numbers)
     printf("Hello World!\n");
-    printf("Hola soy el primer dia de dsadsas sobre el tfm\n");
+    printf("Hola soy el primer dia de 121 sobre el tfm\n");
     printf("Prueba tm\n");
     //print_tm(&loco);
     // wait until uart has finished sending
@@ -72,6 +73,19 @@ int main() {
     printf("Result: 0x%x, Cycles: 0x%x\n", res, end - start);
     uart_write_flush();
 
+
+    install_exception_handler(7, &timer_interrupt_handler);
+    enable_interrupt();
+
+    print_mtvec();
+    
+    printf("Manejador de interrupciones instanciado, pasamos a sleep\n");
+    uart_write_flush();
+    sleep_ms_2(2);
+    printf("Saliendo del sleep con manejador de interrupciones\n");
+    uart_write_flush();
+
+
     // PRUEBA DE INTERRUPCIONES. 
     // CON INTERRUPCIONES DESHABILITADAS NUNCA SALIMOS DEL TIMER
 
@@ -82,8 +96,10 @@ int main() {
     uart_write_flush();
     enable_interrupt();
     printf("Entrando en sleep CON interrupciones\n");
+    uart_write_flush();
     sleep_ms_2(2);
     printf("Saliendo de sleep CON interrupciones\n");
+    uart_write_flush();
     
     disable_interrupt();
 
@@ -100,13 +116,8 @@ int main() {
     // Instalamos el manejador de instrucciones para el puerto 7 (mtie)
     //install_exception_handler(7, &timer_interrupt_handler);
     //interrupt_set_handler(7, &timer_interrupt_handler);
-    enable_interrupt();
 
-    
 
-    printf("Manejador de interrupciones instanciado e interrupciones habilitadas, pasando a sleep");
-    sleep_ms_2(2);
-    printf("Saliendo del sleep check del manejador de interrupciones");
 
 
     

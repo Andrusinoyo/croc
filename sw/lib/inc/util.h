@@ -10,6 +10,8 @@
 
 #include <stdint.h>
 
+#define MTVEC_BASE_ADRR 0X10000000
+
 static inline volatile uint8_t *reg8(const unsigned int base, int offs) {
     return (volatile uint8_t *)(base + offs);
 }
@@ -44,6 +46,13 @@ static inline void set_mie(int enable) {
         asm volatile("csrsi mstatus, 8" ::: "memory");
     else
         asm volatile("csrci mstatus, 8" ::: "memory");
+}
+
+// Leer el vector de interrupciones
+static inline uintptr_t read_mtvec(void) {
+    uintptr_t val;
+    asm volatile("csrr %0, mtvec" : "=r"(val) :: "memory");
+    return val;
 }
 
 // Get cycle count since reset

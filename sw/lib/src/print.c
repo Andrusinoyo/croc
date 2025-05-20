@@ -54,3 +54,8 @@ void printf(const char *fmt, ...) {
 
     va_end(args);
 }
+
+void print_mtvec(void) {
+    uintptr_t val = read_mtvec();
+    printf("mtvec: 0x%" PRIxPTR "\n", val);
+}
