@@ -54,8 +54,3 @@ void printf(const char *fmt, ...) {
 
     va_end(args);
 }
-
-void print_tm(struct tm* t) {
-    printf("Fecha: %04d-%02d-%02d\n", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);
-    printf("Hora:  %02d:%02d:%02d\n", t->tm_hour, t->tm_min, t->tm_sec);
-}
