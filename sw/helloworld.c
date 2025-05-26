@@ -46,7 +46,7 @@ int main() {
 
     // simple printf support (only prints text and hex numbers)
     printf("Hello World!\n");
-    printf("Hola soy el primer dia de 121 sobre el tfm\n");
+    printf("Hola soy el primer dia de 155 sobre el tfm\n");
     printf("Prueba tm\n");
     //print_tm(&loco);
     // wait until uart has finished sending
@@ -74,10 +74,18 @@ int main() {
     uart_write_flush();
 
 
-    install_exception_handler(7, &timer_interrupt_handler);
-    enable_interrupt();
+    //install_exception_handler_vec(7, &timer_interrupt_handler);
+    
 
     print_mtvec();
+
+    install_exception_handler_dir(&timer_interrupt_handler);
+
+    printf("Manejador de interrupciones directo\n");
+
+    print_mtvec();
+
+    enable_interrupt();
     
     printf("Manejador de interrupciones instanciado, pasamos a sleep\n");
     uart_write_flush();
