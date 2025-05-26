@@ -14,14 +14,14 @@
 
 void install_exception_handler_vec(uint32_t dst_addr, void (*handler)(void)) {
 
-    uintptr_t mtvec = read_mtvec();
-    uintptr_t base = mtvec & ~0x3; // quitar los 2 bits de modo
+    uint32_t mtvec = read_mtvec();
+    uint32_t base = mtvec & ~0x3; // quitar los 2 bits de modo
 
-    uintptr_t handler_addr = base + 4 * 7; // 7 = timer interrupt
+    uint32_t handler_addr = base + 4 * dst_addr; // 7 = timer interrupt
 
-    uintptr_t offset = (uintptr_t)handler - handler_addr;
+    uint32_t offset = (uint32_t)handler - handler_addr;
 
-    if ((offset >= (1 << 19)) || (offset < -(1 << 19))) {
+    if ((offset >= (1 << 20)) || (offset < -(1 << 19))) {
         // offset fuera del rango de la instrucción JAL
         return;
     }
@@ -37,7 +37,7 @@ void install_exception_handler_vec(uint32_t dst_addr, void (*handler)(void)) {
 
     *(volatile uint32_t*)dst_addr = instr;
 
-    asm volatile("fence.i" ::: "memory");
+    //asm volatile("fence.i" ::: "memory");
 }
 
 void install_exception_handler_dir(void (*handler)(void)) {
@@ -49,6 +49,7 @@ void install_exception_handler_dir(void (*handler)(void)) {
     
     asm volatile("csrw mtvec, %0" :: "r"(val) : "memory");
 
-    asm volatile("fence.i" ::: "memory");
+    //asm volatile("fence.i" ::: "memory");
 
 }
+

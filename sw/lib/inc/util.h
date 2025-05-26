@@ -48,9 +48,15 @@ static inline void set_mie(int enable) {
         asm volatile("csrci mstatus, 8" ::: "memory");
 }
 
+static inline int get_mtie() {
+    unsigned int mie;
+    asm volatile("csrr %0, mie" : "=r"(mie));
+    return (mie >> 7) & 1;
+}
+
 // Leer el vector de interrupciones
-static inline uintptr_t read_mtvec(void) {
-    uintptr_t val;
+static inline uint32_t read_mtvec(void) {
+    uint32_t val;
     asm volatile("csrr %0, mtvec" : "=r"(val) :: "memory");
     return val;
 }
@@ -67,6 +73,21 @@ static inline uint64_t invoke(void *code) {
     uint64_t (*code_fun_ptr)(void) = code;
     fencei();
     return code_fun_ptr();
+}
+
+// 1 -> vectored, 0 -> direct
+static inline void set_mtvec_mode(int vectored) {
+    uint32_t mtvec;
+    asm volatile("csrr %0, mtvec" : "=r"(mtvec));
+
+
+    // Borra los bits [1:0] y agrega el nuevo modo
+    mtvec = (mtvec & ~0x3) | (vectored & 0x1);
+
+    //asm volatile("csrw mtvec, %0" :: "r"(mtvec));
+    asm volatile("csrw mtvec, %0" :: "r"(0x10000000));
+
+
 }
 
 // Set global pointer and return prior value. Use with caution.
