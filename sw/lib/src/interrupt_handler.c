@@ -1,6 +1,8 @@
 
 #include <stdint.h>
 #include "util.h"
+#include "print.h"
+
 
 #define MTVEC_BASE_ADRR 0X10000000
 
@@ -17,27 +19,49 @@ void install_exception_handler_vec(uint32_t dst_addr, void (*handler)(void)) {
     uint32_t mtvec = read_mtvec();
     uint32_t base = mtvec & ~0x3; // quitar los 2 bits de modo
 
-    uint32_t handler_addr = base + 4 * dst_addr; // 7 = timer interrupt
+    // uint32_t handler_addr = base + 4 * dst_addr; // 7 = timer interrupt
+    uint32_t *handler_addr = (uint32_t*) (base + 4 * dst_addr); // 7 = timer interrupt
 
-    uint32_t offset = (uint32_t)handler - handler_addr;
+    printf("handler_addr: %" PRIxPTR "\n", handler_addr);
+    printf("handler: %" PRIxPTR "\n", (uint32_t)handler);
 
-    if ((offset >= (1 << 20)) || (offset < -(1 << 19))) {
-        // offset fuera del rango de la instrucción JAL
-        return;
+    int32_t offset = (uint32_t)handler - (uint32_t) handler_addr;
+
+    printf("Offset (handles - handlr addrs): %" PRIxPTR "\n", offset);
+
+    // if ((offset >= (1 << 20)) || (offset < -(1 << 19))) {
+    //     // offset fuera del rango de la instrucción JAL
+    //     return;
+    // }
+
+    // uint32_t imm = (uint32_t)offset;
+
+    // uint32_t instr =
+    //     ((imm & 0x100000) << 11) |  // bit 20 -> 31
+    //     ((imm & 0xFF000))        |  // bits 19:12 -> 19:12
+    //     ((imm & 0x800) << 9)     |  // bit 11 -> 20
+    //     ((imm & 0x7FE) << 20)    |  // bits 10:1 -> 30:21
+
+    //     0x6F;                       // opcode for JAL
+
+    if ((offset >= (1 << 19)) || (offset < -(1 << 19))) {
+    return;
     }
 
-    uint32_t imm = (uint32_t)offset;
+    uint32_t offset_uimm = offset;
 
-    uint32_t instr =
-        ((imm & 0x100000) << 11) |  // bit 20 -> 31
-        ((imm & 0xFF000))        |  // bits 19:12 -> 19:12
-        ((imm & 0x800) << 9)     |  // bit 11 -> 20
-        ((imm & 0x7FE) << 20)    |  // bits 10:1 -> 30:21
-        0x6F;                       // opcode for JAL
+    uint32_t jmp_ins = ((offset_uimm & 0x7fe) << 20) |     // imm[10:1] -> 21
+                     ((offset_uimm & 0x800) << 9) |      // imm[11] -> 20
+                     (offset_uimm & 0xff000) |           // imm[19:12] -> 12
+                     ((offset_uimm & 0x100000) << 11) |  // imm[20] -> 31
+                     0x6f;                               // J opcode
 
-    *(volatile uint32_t*)dst_addr = instr;
 
-    //asm volatile("fence.i" ::: "memory");
+
+    *handler_addr = jmp_ins;
+
+    //fencei();
+
 }
 
 void install_exception_handler_dir(void (*handler)(void)) {

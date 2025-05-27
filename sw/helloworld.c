@@ -38,7 +38,8 @@ void timer_interrupt_handler(void) __attribute__((interrupt)); // Deberia funcio
 
 // __attribute__((interrupt)): manejador de interrupciones
 void timer_interrupt_handler(void) {
-    printf("Soy el manejador de interrupciones y funciono, soy la polla");
+    printf("Soy el manejador de interrupciones y funciono, que pereza, soy la polla\n");
+    uart_write_flush();
 }
 
 int main() {
@@ -75,19 +76,25 @@ int main() {
 
 
     //install_exception_handler_vec(7, &timer_interrupt_handler);
-    printf("mtvec antes de modificarr ");
+    enable_interrupt();
 
+    printf("mtvec antes de modifdfgdsdstfgsaaicarrrs<r ");
     print_mtvec();
 
     install_exception_handler_vec(7, &timer_interrupt_handler);
+    printf("Handles instanciado ");
 
     print_mtvec();
-
-    enable_interrupt();
 
     printf("Manejador de interrupciones instanciado, pasamos a sleep\n");
     uart_write_flush();
     sleep_ms_2(2);
+    while (1)
+    {
+    
+    }
+    
+
     printf("Saliendo del sleep con manejador de interrupciones\n");
     uart_write_flush();
 

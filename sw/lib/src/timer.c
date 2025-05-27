@@ -60,7 +60,7 @@ void sleep_ms(uint32_t ms) {
     asm volatile("wfi");
 
     // turn off timer
-    *reg32(TIMER_BASE_ADDR, CFG_LOW_REG_OFFSET) &= ~(1 << CFG_LOW_REG_ENABLE_BIT);
+    //*reg32(TIMER_BASE_ADDR, CFG_LOW_REG_OFFSET) &= ~(1 << CFG_LOW_REG_ENABLE_BIT);
 
     // disable timer interrupt
     // set_mtie(0);
