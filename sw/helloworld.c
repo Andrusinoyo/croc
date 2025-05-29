@@ -76,12 +76,25 @@ int main() {
 
 
     //install_exception_handler_vec(7, &timer_interrupt_handler);
-    enable_interrupt();
+
+    all_interrupt_enable();
 
     printf("mtvec antes de modifdfgdsdstfgsaaicarrrs<r ");
     print_mtvec();
 
+    install_exception_handler_vec(1, &timer_interrupt_handler);
+    install_exception_handler_vec(2, &timer_interrupt_handler);
+    install_exception_handler_vec(3, &timer_interrupt_handler);
+    install_exception_handler_vec(5, &timer_interrupt_handler);
+    install_exception_handler_vec(6, &timer_interrupt_handler);
     install_exception_handler_vec(7, &timer_interrupt_handler);
+    install_exception_handler_vec(9, &timer_interrupt_handler);
+    install_exception_handler_vec(10, &timer_interrupt_handler);
+    install_exception_handler_vec(11, &timer_interrupt_handler);
+    install_exception_handler_vec(12, &timer_interrupt_handler);
+    install_exception_handler_vec(13, &timer_interrupt_handler);
+
+
     printf("Handles instanciado ");
 
     print_mtvec();

@@ -32,12 +32,82 @@ static inline void wfi() {
     asm volatile("wfi" ::: "memory");
 }
 
+static inline void set_ssie(int enable) {
+    if (enable)
+        asm volatile("csrs mie, %0" ::"r"(2) : "memory");
+    else
+        asm volatile("csrc mie, %0" ::"r"(2) : "memory");
+}
+
+static inline void set_vsie(int enable) {
+    if (enable)
+        asm volatile("csrs mie, %0" ::"r"(4) : "memory");
+    else
+        asm volatile("csrc mie, %0" ::"r"(4) : "memory");
+}
+
+static inline void set_msie(int enable) {
+    if (enable)
+        asm volatile("csrs mie, %0" ::"r"(8) : "memory");
+    else
+        asm volatile("csrc mie, %0" ::"r"(8) : "memory");
+}
+
+static inline void set_stie(int enable) {
+    if (enable)
+        asm volatile("csrs mie, %0" ::"r"(32) : "memory");
+    else
+        asm volatile("csrc mie, %0" ::"r"(32) : "memory");
+}
+
+static inline void set_vstie(int enable) {
+    if (enable)
+        asm volatile("csrs mie, %0" ::"r"(64) : "memory");
+    else
+        asm volatile("csrc mie, %0" ::"r"(64) : "memory");
+}
+
 // Enables or disables M-mode timer interrupts.
 static inline void set_mtie(int enable) {
     if (enable)
         asm volatile("csrs mie, %0" ::"r"(128) : "memory");
     else
         asm volatile("csrc mie, %0" ::"r"(128) : "memory");
+}
+
+static inline void set_seie(int enable) {
+    if (enable)
+        asm volatile("csrs mie, %0" ::"r"(512) : "memory");
+    else
+        asm volatile("csrc mie, %0" ::"r"(512) : "memory");
+}
+
+static inline void set_vseie(int enable) {
+    if (enable)
+        asm volatile("csrs mie, %0" ::"r"(1024) : "memory");
+    else
+        asm volatile("csrc mie, %0" ::"r"(1024) : "memory");
+}
+
+static inline void set_meie(int enable) {
+    if (enable)
+        asm volatile("csrs mie, %0" ::"r"(2058) : "memory");
+    else
+        asm volatile("csrc mie, %0" ::"r"(2058) : "memory");
+}
+
+static inline void set_sgeie(int enable) {
+    if (enable)
+        asm volatile("csrs mie, %0" ::"r"(4096) : "memory");
+    else
+        asm volatile("csrc mie, %0" ::"r"(4096) : "memory");
+}
+
+static inline void set_lcofie(int enable) {
+    if (enable)
+        asm volatile("csrs mie, %0" ::"r"(8192) : "memory");
+    else
+        asm volatile("csrc mie, %0" ::"r"(8192) : "memory");
 }
 
 // Enables or disables M-mode global interrupts.
@@ -47,12 +117,17 @@ static inline void set_mie(int enable) {
     else
         asm volatile("csrci mstatus, 8" ::: "memory");
 }
+//#################################
 
+//#################################
+
+//#################################
 static inline int get_mtie() {
     unsigned int mie;
     asm volatile("csrr %0, mie" : "=r"(mie));
     return (mie >> 7) & 1;
 }
+//#################################
 
 // Leer el vector de interrupciones
 static inline uint32_t read_mtvec(void) {
@@ -75,6 +150,7 @@ static inline uint64_t invoke(void *code) {
     return code_fun_ptr();
 }
 
+//#################################
 // 1 -> vectored, 0 -> direct
 static inline void set_mtvec_mode(int vectored) {
     uint32_t mtvec;
@@ -86,9 +162,8 @@ static inline void set_mtvec_mode(int vectored) {
 
     //asm volatile("csrw mtvec, %0" :: "r"(mtvec));
     asm volatile("csrw mtvec, %0" :: "r"(0x10000000));
-
-
 }
+//#################################
 
 // Set global pointer and return prior value. Use with caution.
 static inline void *gprw(void *gp) {

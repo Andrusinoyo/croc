@@ -73,6 +73,34 @@ void enable_interrupt(){
 
 }
 
+void all_interrupt_enable(){
+
+    set_ssie(1); // 1
+
+    set_vsie(1); // 2
+
+    set_msie(1); // 3
+
+    set_stie(1); // 5
+
+    set_vstie(1); // 6
+
+    set_mtie(1);  // 7 Machine Timer Interrupt Enable
+
+    set_seie(1); // 9
+
+    set_vseie(1); // 10
+
+    set_meie(1); // 11
+
+    set_sgeie(1); // 12
+
+    set_lcofie(1); // 13
+         
+    set_mie(1);  // Global Interrupt Enable
+
+}
+
 void disable_interrupt(){
 
     set_mtie(0);  // Machine Timer Interrupt Enable
