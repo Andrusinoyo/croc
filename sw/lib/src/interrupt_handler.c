@@ -19,6 +19,8 @@ void install_exception_handler_vec(uint32_t dst_addr, void (*handler)(void)) {
     uint32_t mtvec = read_mtvec();
     uint32_t base = mtvec & ~0x3; // quitar los 2 bits de modo
 
+    printf("base: %" PRIxPTR "\n", base);
+
     // uint32_t handler_addr = base + 4 * dst_addr; // 7 = timer interrupt
     uint32_t *handler_addr = (uint32_t*) (base + 4 * dst_addr); // 7 = timer interrupt
 
@@ -28,21 +30,6 @@ void install_exception_handler_vec(uint32_t dst_addr, void (*handler)(void)) {
     int32_t offset = (uint32_t)handler - (uint32_t) handler_addr;
 
     printf("Offset (handles - handlr addrs): %" PRIxPTR "\n", offset);
-
-    // if ((offset >= (1 << 20)) || (offset < -(1 << 19))) {
-    //     // offset fuera del rango de la instrucción JAL
-    //     return;
-    // }
-
-    // uint32_t imm = (uint32_t)offset;
-
-    // uint32_t instr =
-    //     ((imm & 0x100000) << 11) |  // bit 20 -> 31
-    //     ((imm & 0xFF000))        |  // bits 19:12 -> 19:12
-    //     ((imm & 0x800) << 9)     |  // bit 11 -> 20
-    //     ((imm & 0x7FE) << 20)    |  // bits 10:1 -> 30:21
-
-    //     0x6F;                       // opcode for JAL
 
     if ((offset >= (1 << 19)) || (offset < -(1 << 19))) {
     return;

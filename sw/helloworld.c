@@ -33,12 +33,16 @@ uint32_t isqrt(uint32_t n) {
     return res;
 }
 
-// Declara que esta funcion va a ser usada como manejador de interrupciones
-void timer_interrupt_handler(void) __attribute__((interrupt)); // Deberia funcionar
 
-// __attribute__((interrupt)): manejador de interrupciones
+volatile int handled = 0; 
+
+// Declara que esta funcion va a ser usada como manejador de interrupciones
+//void timer_interrupt_handler(void) __attribute__((interrupt)); // Deberia funcionar
+
+ __attribute__((interrupt))
 void timer_interrupt_handler(void) {
     printf("Soy el manejador de interrupciones y funciono, que pereza, soy la polla\n");
+    handled = 1;
     uart_write_flush();
 }
 
@@ -46,12 +50,12 @@ int main() {
     uart_init(); // setup the uart peripheral
 
     // simple printf support (only prints text and hex numbers)
-    printf("Hello World!\n");
-    printf("Hola soy el primer dia de 155 sobre el tfm\n");
-    printf("Prueba tm\n");
-    //print_tm(&loco);
-    // wait until uart has finished sending
-    uart_write_flush();
+    // printf("Hello World!\n");
+    // printf("Hola soy el primer dia de 155 sobre el tfm\n");
+    // printf("Prueba tm\n");
+    // //print_tm(&loco);
+    // // wait until uart has finished sending
+    // uart_write_flush();
  
 
     // // toggling some GPIOs
@@ -77,23 +81,27 @@ int main() {
 
     //install_exception_handler_vec(7, &timer_interrupt_handler);
 
-    all_interrupt_enable();
+    //all_interrupt_enable();
 
     printf("mtvec antes de modifdfgdsdstfgsaaicarrrs<r ");
     print_mtvec();
 
-    install_exception_handler_vec(1, &timer_interrupt_handler);
-    install_exception_handler_vec(2, &timer_interrupt_handler);
-    install_exception_handler_vec(3, &timer_interrupt_handler);
-    install_exception_handler_vec(5, &timer_interrupt_handler);
-    install_exception_handler_vec(6, &timer_interrupt_handler);
-    install_exception_handler_vec(7, &timer_interrupt_handler);
-    install_exception_handler_vec(9, &timer_interrupt_handler);
-    install_exception_handler_vec(10, &timer_interrupt_handler);
-    install_exception_handler_vec(11, &timer_interrupt_handler);
-    install_exception_handler_vec(12, &timer_interrupt_handler);
-    install_exception_handler_vec(13, &timer_interrupt_handler);
+    // install_exception_handler_vec(1, &timer_interrupt_handler);
+    // install_exception_handler_vec(2, &timer_interrupt_handler);
+    // install_exception_handler_vec(3, &timer_interrupt_handler);
+    // install_exception_handler_vec(5, &timer_interrupt_handler);
+    // install_exception_handler_vec(6, &timer_interrupt_handler);
+    
+    // install_exception_handler_vec(9, &timer_interrupt_handler);
+    // install_exception_handler_vec(10, &timer_interrupt_handler);
+    // install_exception_handler_vec(11, &timer_interrupt_handler);
+    // install_exception_handler_vec(12, &timer_interrupt_handler);
+    // install_exception_handler_vec(13, &timer_interrupt_handler);
 
+
+    enable_interrupt();
+
+    install_exception_handler_vec(7, &timer_interrupt_handler);
 
     printf("Handles instanciado ");
 
@@ -102,12 +110,12 @@ int main() {
     printf("Manejador de interrupciones instanciado, pasamos a sleep\n");
     uart_write_flush();
     sleep_ms_2(2);
-    while (1)
+    while (!handled)
     {
     
     }
     
-
+    handled = 0;
     printf("Saliendo del sleep con manejador de interrupciones\n");
     uart_write_flush();
 
@@ -120,10 +128,17 @@ int main() {
 
     printf("Habilitamos interrupciones\n");
     uart_write_flush();
+
     enable_interrupt();
     printf("Entrando en sleep CON interrupciones\n");
     uart_write_flush();
+
     sleep_ms_2(2);
+    while (!handled)
+    {
+    
+    }
+
     printf("Saliendo de sleep CON interrupciones\n");
     uart_write_flush();
     

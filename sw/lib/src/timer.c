@@ -42,7 +42,7 @@ void sleep_ms(uint32_t ms) {
         (1 << CFG_LOW_REG_CLOCK_SOURCE_BIT) | // from 32.768 kHz ref clock
         (1 << CFG_LOW_REG_PRESC_ENABLE_BIT) | // enable prescaler
         (31 << CFG_LOW_REG_PRESC_VALUE_BIT) | // prescaler value
-        (1 << CFG_LOW_REG_CMP_CLR_BIT)      | // auto-clear
+        (0 << CFG_LOW_REG_CMP_CLR_BIT)      | // auto-clear
         (1 << CFG_LOW_REG_IRQ_ENABLE_BIT)   | // enable IRQ
         (1 << CFG_LOW_REG_ENABLE_BIT);        // enable timer
 
@@ -57,7 +57,7 @@ void sleep_ms(uint32_t ms) {
     // start timer
     *reg32(TIMER_BASE_ADDR, CFG_LOW_REG_OFFSET) = config;
 
-    asm volatile("wfi");
+    //asm volatile("wfi");
 
     // turn off timer
     //*reg32(TIMER_BASE_ADDR, CFG_LOW_REG_OFFSET) &= ~(1 << CFG_LOW_REG_ENABLE_BIT);
