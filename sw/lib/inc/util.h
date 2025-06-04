@@ -10,6 +10,8 @@
 
 #include <stdint.h>
 
+#define MTVEC_BASE_ADRR 0X10000000
+
 static inline volatile uint8_t *reg8(const unsigned int base, int offs) {
     return (volatile uint8_t *)(base + offs);
 }
@@ -30,6 +32,41 @@ static inline void wfi() {
     asm volatile("wfi" ::: "memory");
 }
 
+static inline void set_ssie(int enable) {
+    if (enable)
+        asm volatile("csrs mie, %0" ::"r"(2) : "memory");
+    else
+        asm volatile("csrc mie, %0" ::"r"(2) : "memory");
+}
+
+static inline void set_vsie(int enable) {
+    if (enable)
+        asm volatile("csrs mie, %0" ::"r"(4) : "memory");
+    else
+        asm volatile("csrc mie, %0" ::"r"(4) : "memory");
+}
+
+static inline void set_msie(int enable) {
+    if (enable)
+        asm volatile("csrs mie, %0" ::"r"(8) : "memory");
+    else
+        asm volatile("csrc mie, %0" ::"r"(8) : "memory");
+}
+
+static inline void set_stie(int enable) {
+    if (enable)
+        asm volatile("csrs mie, %0" ::"r"(32) : "memory");
+    else
+        asm volatile("csrc mie, %0" ::"r"(32) : "memory");
+}
+
+static inline void set_vstie(int enable) {
+    if (enable)
+        asm volatile("csrs mie, %0" ::"r"(64) : "memory");
+    else
+        asm volatile("csrc mie, %0" ::"r"(64) : "memory");
+}
+
 // Enables or disables M-mode timer interrupts.
 static inline void set_mtie(int enable) {
     if (enable)
@@ -38,12 +75,65 @@ static inline void set_mtie(int enable) {
         asm volatile("csrc mie, %0" ::"r"(128) : "memory");
 }
 
+static inline void set_seie(int enable) {
+    if (enable)
+        asm volatile("csrs mie, %0" ::"r"(512) : "memory");
+    else
+        asm volatile("csrc mie, %0" ::"r"(512) : "memory");
+}
+
+static inline void set_vseie(int enable) {
+    if (enable)
+        asm volatile("csrs mie, %0" ::"r"(1024) : "memory");
+    else
+        asm volatile("csrc mie, %0" ::"r"(1024) : "memory");
+}
+
+static inline void set_meie(int enable) {
+    if (enable)
+        asm volatile("csrs mie, %0" ::"r"(2058) : "memory");
+    else
+        asm volatile("csrc mie, %0" ::"r"(2058) : "memory");
+}
+
+static inline void set_sgeie(int enable) {
+    if (enable)
+        asm volatile("csrs mie, %0" ::"r"(4096) : "memory");
+    else
+        asm volatile("csrc mie, %0" ::"r"(4096) : "memory");
+}
+
+static inline void set_lcofie(int enable) {
+    if (enable)
+        asm volatile("csrs mie, %0" ::"r"(8192) : "memory");
+    else
+        asm volatile("csrc mie, %0" ::"r"(8192) : "memory");
+}
+
 // Enables or disables M-mode global interrupts.
 static inline void set_mie(int enable) {
     if (enable)
         asm volatile("csrsi mstatus, 8" ::: "memory");
     else
         asm volatile("csrci mstatus, 8" ::: "memory");
+}
+//#################################
+
+//#################################
+
+//#################################
+static inline int get_mtie() {
+    unsigned int mie;
+    asm volatile("csrr %0, mie" : "=r"(mie));
+    return (mie >> 7) & 1;
+}
+//#################################
+
+// Leer el vector de interrupciones
+static inline uint32_t read_mtvec(void) {
+    uint32_t val;
+    asm volatile("csrr %0, mtvec" : "=r"(val) :: "memory");
+    return val;
 }
 
 // Get cycle count since reset
@@ -59,6 +149,21 @@ static inline uint64_t invoke(void *code) {
     fencei();
     return code_fun_ptr();
 }
+
+//#################################
+// 1 -> vectored, 0 -> direct
+static inline void set_mtvec_mode(int vectored) {
+    uint32_t mtvec;
+    asm volatile("csrr %0, mtvec" : "=r"(mtvec));
+
+
+    // Borra los bits [1:0] y agrega el nuevo modo
+    mtvec = (mtvec & ~0x3) | (vectored & 0x1);
+
+    //asm volatile("csrw mtvec, %0" :: "r"(mtvec));
+    asm volatile("csrw mtvec, %0" :: "r"(0x10000000));
+}
+//#################################
 
 // Set global pointer and return prior value. Use with caution.
 static inline void *gprw(void *gp) {

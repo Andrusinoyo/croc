@@ -41,3 +41,7 @@
 #define CFG_HIGH_REG_CLOCK_SOURCE_BIT 7
 
 void sleep_ms(uint32_t ms);
+void sleep_ms_2(uint32_t ms);
+void enable_interrupt();
+void disable_interrupt();
+void all_interrupt_enable();
