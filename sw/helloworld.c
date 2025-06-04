@@ -167,9 +167,9 @@ int main() {
     uint32_t counter_timer = 0;
     while(counter_timer < 20) {
     printf("Tick\n");
-    sleep_ms(10);
+    sleep_ms(1);
     printf("Tock\n");
-    sleep_ms(10);
+    sleep_ms(1);
     counter_timer++;
     uart_write_flush();
     }
